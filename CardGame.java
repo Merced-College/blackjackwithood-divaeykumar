@@ -1,4 +1,4 @@
-package cardGame;
+// package cardGame;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,7 +11,7 @@ public class CardGame {
 	private static ArrayList<Card> playerCards = new ArrayList<Card>();
 
 
-	public static void main(String[] args) {
+		public static void main(String[] args) {
 
 		Scanner input = null;
 		try {
