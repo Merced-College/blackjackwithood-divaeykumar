@@ -3,91 +3,85 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class CardGame {
 
-    private static ArrayList<Card> deckOfCards = new ArrayList<Card>();
-    private static ArrayList<Card> playerCards = new ArrayList<Card>();
+    private static ArrayList<Card> deckOfCards = new ArrayList<>();
+    private static ArrayList<Card> playerCards = new ArrayList<>();
 
-
-        public static void main(String[] args) {
+    public static void main(String[] args) {
 
         Scanner input = null;
         try {
             input = new Scanner(new File("cards.txt"));
         } catch (FileNotFoundException e) {
-            // error
-            System.out.println("error");
+            System.out.println("Error: File not found!");
             e.printStackTrace();
+            return;
         }
 
-        while(input.hasNext()) {
-            String[] fields  = input.nextLine().split(",");
-            //  public Card(String cardSuit, String cardName, int cardValue, String cardPicture) {
+        // Read file and populate deck
+        while (input.hasNext()) {
+            String[] fields = input.nextLine().split(",");
             Card newCard = new Card(fields[0], fields[1].trim(),
-                    Integer.parseInt(fields[2].trim()), fields[3]);
-            deckOfCards.add(newCard);  
+                    Integer.parseInt(fields[2].trim()), fields[3].trim());
+            deckOfCards.add(newCard);
+        }
+        input.close();
+
+        // Start game loop
+        Scanner scanner = new Scanner(System.in);
+        boolean playAgain = true;
+
+        while (playAgain) { //Changed the shuffle deck feature and added some extra features to the shuffle, this feature is to have the option for the user to play again
+            shuffleDeck();
+
+            // Clear previous round's hand
+            playerCards.clear();
+
+            // Deal 
+            if (deckOfCards.size() < 5) { //Instead of the deck size being only 4, now it is 5
+                System.out.println("Not enough cards left! Game over."); //This command prevents the cards from running out
+                break;
+            }
+            for (int i = 0; i < 5; i++) {
+                playerCards.add(deckOfCards.remove(0)); // Take from top after shuffle and doesn't run into any complications when the shuffling deck
+            }
+
+            // Show player's hand
+            System.out.println("\nPlayer's hand:");
+            for (Card c : playerCards) {
+                System.out.println(c);
+            }
+
+            // Check for a pair
+            System.out.println("Pairs found: " + (checkFor2Kind() ? "Yes!" : "No"));
+
+            // Gives a option the user to play again
+            System.out.print("\nDraw a new hand? (yes/no): ");
+            String response = scanner.nextLine().trim().toLowerCase();
+            playAgain = response.equals("yes");
         }
 
-        shuffle();
-
-        //for(Card c: deckOfCards)
-            //System.out.println(c);
-
-        //deal the player 5 cards
-        for(int i = 0; i < 4; i++) {
-            playerCards.add(deckOfCards.remove(i));
-        }
-       
-        System.out.println("players cards");
-        for(Card c: playerCards)
-            System.out.println(c);
-
-        System.out.println("pairs is " + checkFor2Kind());
-
-    }//end main
-
-    public static void shuffle() {
-
-        //shuffling the cards by deleting and reinserting
-        for (int i = 0; i < deckOfCards.size(); i++) {
-            int index = (int) (Math.random()*deckOfCards.size());
-            Card c = deckOfCards.remove(index);
-            //System.out.println("c is " + c + ", index is " + index);
-            deckOfCards.add(c);
-        }
+        System.out.println("Thanks for playing!");
+        scanner.close();
     }
 
-    //check for 2 of a kind in the players hand
+    public static void shuffleDeck() {
+        Collections.shuffle(deckOfCards);  //This is a method call using the Fisher-Yates algorithm and allows for a better random shuffle
+    }
+
     public static boolean checkFor2Kind() {
-
-        int playerPair = 0; //Keeps count of card value when user deals cards
-        int count = 0;
-        for(int i = 0; i < playerCards.size() - 1; i++) {
-            Card current = playerCards.get(i);
-            Card next = playerCards.get(i+1);
-            
-            for(int j = i+1; j < playerCards.size(); j++) {
-                next = playerCards.get(j);
-                //System.out.println(" comparing " + current);
-                //System.out.println(" to " + next);
-                if(current.equals(next)) {
-                    count++; //
-                    playerPair++; //
-                }
-   
-            }//end of inner for
-
-            System.out.println(playerPair); //prints if the pair is true or false depending on what card the user gets
-            if(count == 1)
-                return true;
-
-
-        }//end outer for
+        // Count occurrences of each rank
+        ArrayList<String> seenRanks = new ArrayList<>();
+        for (Card card : playerCards) {
+            if (seenRanks.contains(card.getRank())) { //This helps to see if the player has two cards of the same rank in their hand when the cards are drawn
+                return true; // Found a pair
+            }
+            seenRanks.add(card.getRank());
+        }
         return false;
     }
-}//end class
-
-
-
+}
