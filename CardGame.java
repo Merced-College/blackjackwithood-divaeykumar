@@ -1,4 +1,7 @@
-// package cardGame;
+// Name: Divaey Kumar, Maryam Badalyengejeh
+// Professor: Kathleen Kanemoto
+// Class: CPSC-39-10106
+// Date: February 7, 2025
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,7 +63,7 @@ public class CardGame {
             System.out.println("Pairs found: " + (checkFor2Kind() ? "Yes!" : "No"));
 
             // Gives a option the user to play again
-            System.out.print("\nDraw a new hand? (yes/no): ");
+            System.out.print("\nDraw a new hand? (yes/no): "); 
             String response = scanner.nextLine().trim().toLowerCase();
             playAgain = response.equals("yes");
         }
